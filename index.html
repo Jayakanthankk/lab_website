@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIM (Host Immune Microbiome) Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0f1e;
+      --navy2:  #111827;
+      --navy3:  #1a2540;
+      --amber:  #e8a44a;
+      --amber2: #f5c776;
+      --teal:   #3ecfb2;
+      --white:  #f0ece3;
+      --muted:  #8a93a8;
+      --card:   #131d30;
+      --border: rgba(232,164,74,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 700;
+      color: var(--amber); letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--amber); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 4rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(62,207,178,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 20% 80%, rgba(232,164,74,0.08) 0%, transparent 55%),
+        linear-gradient(160deg, #0a0f1e 0%, #0d1628 60%, #111827 100%);
+    }
+    /* Decorative vessel lines */
+    .vessel-svg {
+      position: absolute; top: 0; right: 0; width: 55%; height: 100%;
+      opacity: 0.07; z-index: 0; pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 780px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 1.4rem;
+      opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 28px; height: 1px; background: var(--teal);
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      margin-bottom: 0.3em;
+      opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
+    }
+    .hero-title em { color: var(--amber); font-style: italic; }
+    .hero-subtitle {
+      font-size: 1.15rem; font-weight: 300; color: var(--muted);
+      line-height: 1.7; max-width: 540px; margin-bottom: 2.8rem;
+      opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+    }
+    .hero-ctas {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
+    }
+    .btn-primary {
+      padding: 0.85rem 2.2rem; background: var(--amber);
+      color: var(--navy); font-weight: 700; font-size: 0.9rem;
+      letter-spacing: 0.04em; text-decoration: none; border-radius: 3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--amber2); transform: translateY(-2px); }
+    .btn-secondary {
+      padding: 0.85rem 2.2rem; background: transparent;
+      border: 1px solid var(--border); color: var(--white);
+      font-weight: 400; font-size: 0.9rem; letter-spacing: 0.04em;
+      text-decoration: none; border-radius: 3px; transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--amber); transform: translateY(-2px); }
+    .hero-stats {
+      position: absolute; bottom: 3rem; right: 4rem; z-index: 1;
+      display: flex; gap: 3rem;
+      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .stat-item { text-align: right; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 900; color: var(--amber); line-height: 1;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.3rem; }
+
+
+/* ─── HERO IMAGE PLACEHOLDER ─── */
+/* ─── HERO IMAGE PLACEHOLDER ─── */
+.hero-media {
+  position: absolute; right: 4rem; bottom: 10.5rem; z-index: 1;
+  width: clamp(220px, 28vw, 400px);
+  min-height: 200px;                     
+  border-radius: 8px; overflow: hidden;
+  background: linear-gradient(135deg, var(--navy3) 0%, var(--navy2) 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(31,42,68,0.06), 0 8px 20px rgba(31,42,68,0.05);
+  opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
+}
+.hero-media img {
+  display: block; width: 100%; height: auto;   
+  position: relative; z-index: 1;             
+}
+.hero-media .photo-placeholder { margin: 0.8rem; }
+
+@media (max-width: 900px) {
+  .hero-media {
+    position: relative; right: auto; bottom: auto;
+    width: 100%; max-width: 500px; margin-top: 2.5rem;
+  }
+}
+    /* ─── SECTIONS ─── */
+    section { padding: 7rem 4rem; }
+    .section-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      color: var(--teal); letter-spacing: 0.14em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem;
+    }
+    .section-tag::before { content: ''; display: block; width: 22px; height: 1px; background: var(--teal); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+      line-height: 1.15; margin-bottom: 3.5rem;
+    }
+    .section-title span { color: var(--amber); font-style: italic; }
+
+    /* ─── RESEARCH ─── */
+#research { background: var(--navy2); }
+
+/* one box, three panes */
+.research-box {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(31,42,68,0.06), 0 8px 20px rgba(31,42,68,0.05);
+}
+.research-pane {
+  position: relative; display: flex; flex-direction: column;
+  min-height: 280px; padding: 2.8rem 2.2rem 2.2rem;
+  cursor: pointer; transition: background 0.3s;
+}
+.research-pane + .research-pane { border-left: 1px solid var(--border); }
+.research-pane::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, var(--amber), var(--teal));
+  transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+}
+.research-pane:hover, .research-pane:focus-visible { background: var(--navy); }
+.research-pane:hover::after, .research-pane:focus-visible::after { transform: scaleX(1); }
+.research-pane:focus-visible { outline: 2px solid var(--amber); outline-offset: -4px; }
+.rc-icon { font-size: 2rem; margin-bottom: 1.3rem; }
+.rc-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+  font-weight: 800; line-height: 1.25;
+}
+.rc-more {
+  margin-top: auto; padding-top: 1.8rem;
+  font-family: 'DM Mono', monospace; font-size: 0.72rem;
+  letter-spacing: 0.06em; color: var(--amber);
+}
+.rc-more span { display: inline-block; transition: transform 0.2s; }
+.research-pane:hover .rc-more span { transform: translateX(4px); }
+.rc-full { display: none; }   /* full text lives here, shown only in the popup */
+
+/* integration: plain text below the box, no popup */
+.integration { margin: 5rem 0 0; text-align: center; }
+.integration::before {
+  content: ''; display: block; width: 64px; height: 2px; margin: 0 auto 1.8rem;
+  background: linear-gradient(90deg, var(--amber), var(--teal));
+}
+.integration-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.5rem); font-weight: 800;
+  line-height: 1.2; margin-bottom: 1.4rem;
+}
+.integration-text {
+  font-family: 'Cormorant Garamond', serif; font-weight: 500;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem); line-height: 1.9; color: var(--muted);
+}
+.integration-text em { font-style: italic; color: var(--amber); }
+
+/* research popup (reuses .modal-overlay, .modal and .modal-close) */
+.rmodal-head {
+  display: flex; align-items: center; gap: 1.1rem;
+  margin-bottom: 1.5rem; padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.rmodal-icon {
+  flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  background: var(--navy2); border: 1px solid var(--border);
+}
+#rmodal-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.4rem;
+  line-height: 1.25; padding-right: 1.5rem;
+}
+#rmodal-body p { color: var(--muted); font-size: 0.95rem; line-height: 1.85; }
+
+@media (max-width: 900px) {
+  .research-box { grid-template-columns: 1fr; }
+  .research-pane { min-height: 0; }
+  .research-pane + .research-pane { border-left: 0; border-top: 1px solid var(--border); }
+  .integration { margin-top: 3.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .research-pane, .research-pane::after, .rc-more span { transition: none; }
+}
+
+    /* ─── PUBLICATIONS ─── */
+    #publications { background: var(--navy); }
+    .pub-list { display: flex; flex-direction: column; gap: 0; }
+    .pub-item {
+      display: grid; grid-template-columns: 56px 1fr auto;
+      gap: 1.5rem; align-items: start; padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.2s; border-radius: 4px;
+    }
+    .pub-item:hover { background: rgba(232,164,74,0.03); padding-left: 1rem; padding-right: 1rem; }
+    .pub-year {
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      color: var(--amber); padding-top: 0.25rem;
+    }
+    .pub-content {}
+    .pub-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; line-height: 1.5; }
+    .pub-authors { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .pub-journal {
+      font-style: italic; font-size: 0.82rem;
+      color: var(--teal);
+    }
+    .pub-link {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 1rem; color: var(--amber); text-decoration: none;
+      white-space: nowrap; padding-top: 0.3rem;
+      transition: opacity 0.8s;
+    }
+    .pub-link:hover { opacity: 0.7; }
+
+    /* ─── ABOUT ─── */
+    #about {
+      padding: 0; background: var(--card);
+      display: grid; grid-template-columns: 60% 40%;
+    }
+    .about-text { padding: 7rem 4rem; align-self: center; }
+    .about-text p {
+      color: var(--muted); font-size: 1rem; line-height: 1.85;
+      margin-bottom: 1.4rem; max-width:700px;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-media {
+      position: relative; min-height: 460px; overflow: hidden;
+      background: linear-gradient(135deg, var(--navy3) 0%, var(--navy) 100%);
+    }
+    .about-media img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    @media (max-width: 900px) {
+      #about { grid-template-columns: 1fr; }
+      .about-text { padding: 5rem 1.5rem; }
+      .about-media { min-height: 280px; }
+    }
+
+/* ─── COLLABORATORS ─── */
+#collaborators { background: var(--navy); }
+.collab-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.collab-card {
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: 150px; padding: 2rem 1.6rem; text-align: center;
+  background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(31,42,68,0.06), 0 8px 20px rgba(31,42,68,0.05);
+  transition: transform 0.25s, border-color 0.25s;
+}
+.collab-card:hover { transform: translateY(-6px); border-color: rgba(140,47,57,0.4); }
+.collab-card .team-role { margin-bottom: 0; }
+
+
+
+    /* ─── TEAM ─── */
+    #team { background: var(--navy2); }
+.team-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;
+  align-items: start;   /* added: each card is only as tall as its content */
+}
+.team-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 2rem 1.6rem; text-align: center;
+  transition: transform 0.25s, border-color 0.25s;
+  height: 380px; 
+width:250px;          /* added: set card height */
+  box-sizing: border-box;  /* added: keeps padding and border inside that height */
+}
+    .team-card:hover { transform: translateY(-6px); border-color: rgba(232,164,74,0.4); }
+    .team-avatar {
+      width: 120px; height: 120px; border-radius: 80%;
+      margin: 0 auto 1.1rem;
+      background: linear-gradient(135deg, var(--navy3) 0%, var(--navy) 100%);
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--amber);
+    }
+    .team-name { font-weight: 800; font-size: 1.0rem; margin-bottom: 0.3rem; }
+    .team-role { font-weight: 800;font-size: 1.0rem; color: var(--teal); margin-bottom: 0.6rem; }
+    .team-focus { font-size: 0.78rem; color: var(--black); line-height: 1.55; }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--navy); }
+    .contact-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 5rem; align-items: start; }
+    .contact-info {}
+    .contact-info p { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem; }
+    .contact-details { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
+    .contact-row {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.88rem;
+    }
+    .contact-row-icon { color: var(--amber); font-size: 1rem; width: 20px; }
+    .contact-row a { color: var(--white); text-decoration: none; }
+    .contact-row a:hover { color: var(--amber); }
+    .join-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2.5rem;
+    }
+    .join-box h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .join-box p { color: var(--muted); font-size: 0.88rem; line-height: 1.75; margin-bottom: 1.8rem; }
+    .positions { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.8rem; }
+    .position {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.85rem; color: var(--white);
+    }
+    .pos-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--navy2); border-top: 1px solid var(--border);
+      padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--muted); }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
+      color: var(--amber); font-weight: 700;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.4rem; }
+      section { padding: 5rem 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .hero-stats { position: static; margin-top: 3rem; justify-content: flex-start; }
+      .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+
+    /* ─── LIGHT ACADEMIC THEME ───────────────────────────────────────
+       Variable names are unchanged so the rest of the CSS keeps working:
+       --navy / --navy2 / --navy3 are now paper tones, --white is the ink
+       colour, --amber is the main accent (burgundy), --teal the second accent.
+       To go back to the dark theme, delete this block.
+    ──────────────────────────────────────────────────────────────── */
+    :root {
+      color-scheme: light;
+      --navy:   #fbf8f3;  /* page background: warm paper     */
+      --navy2:  #f3eee5;  /* alternate sections: parchment   */
+      --navy3:  #e7dfd0;  /* deeper parchment                */
+      --card:   #ffffff;  /* cards                           */
+      --white:  #1f2a44;  /* main text: ink navy             */
+      --muted:  #5b6478;  /* secondary text                  */
+      --amber:  #8c2f39;  /* main accent: burgundy           */
+      --amber2: #a8434f;  /* accent hover                    */
+      --teal:   #1f6f78;  /* second accent: deep teal        */
+      --border: rgba(31,42,68,0.14);
+    }
+
+    /* Colours that were hard-coded for the dark theme */
+    nav { background: rgba(251,248,243,0.88); }
+    .hero-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(31,111,120,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 20% 80%, rgba(140,47,57,0.07) 0%, transparent 55%),
+        linear-gradient(160deg, #fbf8f3 0%, #f6f1e8 60%, #f0e9dc 100%);
+    }
+    .vessel-svg { opacity: 0.1; }
+    .vessel-svg path   { stroke: var(--amber); }
+    .vessel-svg circle { fill: var(--amber); }
+    .pub-item { border-bottom: 1px solid rgba(31,42,68,0.10); }
+    .pub-item:hover { background: rgba(140,47,57,0.04); }
+    .team-card:hover { border-color: rgba(140,47,57,0.4); }
+
+    /* Soft shadows so white cards lift off the paper background */
+    .team-card, .join-box {
+      box-shadow: 0 1px 2px rgba(31,42,68,0.06), 0 8px 20px rgba(31,42,68,0.05);
+    }
+
+    /* ─── PHOTO PLACEHOLDERS ─── */
+    /* Team: the photo sits on top of the role text. If the file is missing, the photo hides and the text shows. */
+    .team-avatar { position: relative; overflow: hidden; text-align: center; line-height: 1.2; font-size: 0.85rem; padding: 0.5rem; }
+    .team-avatar img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    /* About: dashed box shows until images/lab-photo.jpg exists */
+    .photo-placeholder {
+      position: absolute; inset: 0; margin: 1.5rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.4rem; text-align: center; padding: 1.5rem;
+      border: 2px dashed var(--border); border-radius: 6px;
+      color: var(--muted); font-size: 0.9rem;
+    }
+    .photo-placeholder small { font-family: 'DM Mono', monospace; font-size: 0.72rem; }
+
+    /* ─── TEAM POPUP ─── */
+    .team-card { cursor: pointer; }
+    .team-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+    .team-card::after {
+      content: 'View profile →';
+      display: block; margin-top: 1.1rem;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--amber);
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .team-card:hover::after, .team-card:focus-visible::after { opacity: 1; transform: none; }
+
+    .team-bio { display: none; }   /* bio text lives in the card but is only shown in the popup */
+
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      background: rgba(31,42,68,0.55);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.25s, visibility 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal {
+      position: relative; width: 100%; max-width: 620px;
+      max-height: 88vh; overflow-y: auto;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 2.5rem;
+      box-shadow: 0 24px 60px rgba(31,42,68,0.25);
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1.2rem;
+      background: none; border: none; cursor: pointer;
+      font-size: 1.8rem; line-height: 1; color: var(--muted);
+    }
+    .modal-close:hover { color: var(--amber); }
+    .modal-head {
+      display: flex; align-items: center; gap: 1.2rem;
+      margin-bottom: 1.5rem; padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-head .team-avatar { margin: 0; flex-shrink: 0; width: 88px; height: 88px; font-size: 0.75rem; }
+    #modal-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; margin-bottom: 0.2rem; }
+    #modal-role { font-size: 0.85rem; font-weight: 700; color: var(--teal); }
+    #modal-body p { color: var(--muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem; }
+    #modal-body a { color: var(--amber); }
+    .modal-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
+    .modal-links a {
+      font-size: 0.8rem; text-decoration: none;
+      padding: 0.45rem 1rem; border: 1px solid var(--border);
+      border-radius: 3px; transition: border-color 0.2s;
+    }
+    .modal-links a:hover { border-color: var(--amber); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">HIM (Host Immune Microbiome) Lab</div>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <svg class="vessel-svg" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M300 0 C300 0 260 80 280 160 C300 240 340 280 320 380 C300 480 240 520 260 620 C280 720 300 800 300 800" stroke="white" stroke-width="2"/>
+    <path d="M300 160 C300 160 360 180 400 240 C440 300 420 360 460 400" stroke="white" stroke-width="1.5"/>
+    <path d="M300 380 C300 380 240 400 200 460 C160 520 180 580 140 620" stroke="white" stroke-width="1.5"/>
+    <path d="M280 300 C280 300 220 310 190 360 C160 410 170 450 140 480" stroke="white" stroke-width="1"/>
+    <path d="M320 420 C320 420 380 430 410 480 C440 530 430 570 460 600" stroke="white" stroke-width="1"/>
+    <circle cx="300" cy="160" r="4" fill="white" opacity="0.5"/>
+    <circle cx="300" cy="380" r="4" fill="white" opacity="0.5"/>
+    <circle cx="300" cy="580" r="3" fill="white" opacity="0.3"/>
+  </svg>
+
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Immunology Research Group</div>
+    <h1 class="hero-title">
+      Decoding <em>Vascular</em><br>& Mucosal Immunity
+    </h1>
+    <p class="hero-subtitle">
+      We investigate the molecular and cellular mechanisms driving vasculitis and mucosal inflammation — bridging basic immunology with translational clinical science.
+    </p>
+    <div class="hero-ctas">
+      <a href="#research" class="btn-primary">Explore Research</a>
+      <a href="#contact" class="btn-secondary">Join the Lab</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">80+</div>
+      <div class="stat-label">Publications</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Lab Members</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Active Projects</div>
+    </div>
+  </div>
+</section>
+
+
+<div class="hero-media">
+  <div class="photo-placeholder">
+    <span style="font-size:1.8rem;">🖼️</span>
+    <span>Hero image</span>
+    <small>homepage.jpg</small>
+  </div>
+  <img src="homepage.png" alt="HIM (Host Immune Microbiome) Lab" onerror="this.style.display='none'" />
+</div>
+
+
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="reveal">
+    <div class="section-tag">Our Science</div>
+    <h2 class="section-title">Research <span>Focus Areas</span></h2>
+  </div>
+
+  <div class="research-box reveal">
+    <div class="research-pane" role="button" tabindex="0" aria-haspopup="dialog">
+      <div class="rc-icon">🦠</div>
+      <div class="rc-title">Vasculitis &amp; Autoinflammation</div>
+      <div class="rc-more">Read more <span>→</span></div>
+      <div class="rc-full">
+        <p>We investigate the immunopathogenesis and biomarker signatures of childhood-onset vasculitis across the vasculitic spectrum: large-vessel disease (Takayasu arteritis), medium-vessel vasculitis (Kawasaki disease), and monogenic autoinflammatory vasculitis (Deficiency of Adenosine Deaminase 2, DADA2). Our work combines unbiased transcriptomics, epigenomic profiling, and targeted proteomics to characterize disease-specific immune activation patterns and identify patients at highest risk for complications, particularly coronary artery involvement in Kawasaki disease. We employ genome-wide DNA methylation profiling to map dysfunction in pathogenic T-cell and B-cell subsets, revealing therapeutic targets and biomarkers predictive of treatment response.</p>
+      </div>
+    </div>
+
+    <div class="research-pane" role="button" tabindex="0" aria-haspopup="dialog">
+      <div class="rc-icon">🧫</div>
+      <div class="rc-title">Host-Microbiome Interactions</div>
+      <div class="rc-more">Read more <span>→</span></div>
+      <div class="rc-full">
+        <p>The commensal microbiota exerts profound influence on mucosal barrier function and systemic immune homeostasis. Dysbiosis contributes to disease pathogenesis across our research portfolio. We study gut microbiota composition and functional capacity in the context of early-life inflammation (necrotizing enterocolitis in preterm neonates, neonatal sepsis trajectory), chronic immune-mediated disease (inflammatory bowel disease), and systemic vasculitis. Using shotgun metagenomic sequencing and metabolomic profiling, we characterize how microbiota-derived metabolites including short-chain fatty acids, secondary bile acids, and aryl hydrocarbon ligands shape mucosal immunity and microbial-driven immune dysregulation. Our work encompasses both microbial ecology and functional host-microbe crosstalk, interrogating how dysbiosis establishes pro-inflammatory trajectories and identifying microbiota-derived biomarkers of disease severity and treatment response.</p>
+      </div>
+    </div>
+
+    <div class="research-pane" role="button" tabindex="0" aria-haspopup="dialog">
+      <div class="rc-icon">🧬</div>
+      <div class="rc-title">Multi-Omics Biomarker Discovery &amp; Clinical Translation</div>
+      <div class="rc-more">Read more <span>→</span></div>
+      <div class="rc-full">
+        <p>We leverage integrated multi-omics approaches—transcriptomics (RNA-seq, single-cell transcriptomics), epigenomics (whole-genome bisulfite sequencing, ATAC-seq), targeted proteomics, and metabolomics—to construct disease-specific immune fingerprints and identify clinically actionable biomarkers. Our pipeline combines high-throughput molecular profiling with machine learning and statistical trajectory modeling to derive biomarker signatures predictive of disease diagnosis, activity, complications (e.g., coronary artery lesions in Kawasaki disease), and therapeutic response. We validate findings in independent cohorts and develop point-of-care diagnostics and risk-stratification tools suitable for resource-limited settings. Our commitment to open science includes developing bioinformatic tools and workflows for the broader research community, ensuring reproducibility and accelerating translation from discovery to clinical utility.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="integration reveal">
+    <h3 class="integration-title">🏛️Integration Across Pillars🏛️</h3>
+    <p class="integration-text">
+These three dimensions are fundamentally interconnected: immune dysfunction in vasculitis is both driven by and reflected in dysbiotic microbiota signatures; multi-omics profiling reveals how microbiota-immune crosstalk perpetuates autoinflammatory disease; and the biomarkers we discover become therapeutic targets and clinical decision-support tools. This integrated framework positions us to bridge molecular mechanisms with clinical outcomes and improve patient stratification and management in rare autoinflammatory and inflammatory diseases.
+
+    </p>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="reveal">
+    <div class="section-tag">Selected Work</div>
+    <h2 class="section-title">Recent <span>Publications</span></h2>
+  </div>
+
+  <div class="pub-list reveal">
+
+
+  <div class="pub-item">
+      <div class="pub-year">2026</div>
+      <div class="pub-content">
+        <div class="pub-title">Auxological and pubertal outcomes of children with Kawasaki disease: Experience from Chandigarh, India</div>
+        <div class="pub-authors">Sudip Thakur, Harvinder Kaur, Rakesh Kumar Pilania, Jayakanthan Kabeerdoss, Surjit Singh</div>
+        <div class="pub-journal">World Journal of Clinical Pediatrics</div>
+      </div>
+      <a href="http://dx.doi.org/10.5409/wjcp.122376" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+
+
+
+  <div class="pub-item">
+      <div class="pub-year">2026</div>
+      <div class="pub-content">
+        <div class="pub-title">Deciphering Kawasaki disease genetics through next-generation sequencing: A scoping review
+</div>
+        <div class="pub-authors">Anoop Kumar, Vaishali Thakur, Manpreet Dhaliwal, Taranpreet Kaur, Khem Raj, Jayakanthan Kabeerdoss, Amit Rawat, Rakesh Kumar Pilania</div>
+        <div class="pub-journal">World Journal of Clinical Pediatrics</div>
+      </div>
+      <a href="https://doi.org/10.5409/wjcp.122059" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+
+
+  <div class="pub-item">
+      <div class="pub-year">2026</div>
+      <div class="pub-content">
+        <div class="pub-title">Epidemiology of Kawasaki disease in Chandigarh, India (2020-2024): COVID-19 pandemic-related decline and post-pandemic resurgence
+</div>
+        <div class="pub-authors">Rakesh Kumar Pilania, Suprit Basu, Yamini Sharma,Aarti Goyal,
+Ripudaman Singh, Jyoti Dixit, Abarna Thangaraj, Akhila Dass, Akanksha Dhiman, Saniya Sharma, Manpreet Dhaliwal, Jayakanthan Kabeerdoss,
+Pandiarajan Vignesh, Deepti Suri, Sanjeev Naganur, Manphool Singhal,
+Amit Rawat, Shankar Prinja and Surjit Singh</div>
+        <div class="pub-journal">World Journal of Clinical Pediatrics</div>
+      </div>
+      <a href="https://doi.org/10.1017/s1047951126123683" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+
+
+
+
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Characterization of gut microbiota signatures in Indian preterm infants with necrotizing enterocolitis: a shotgun metagenomic approach</div>
+        <div class="pub-authors">JK Prabavathi Devarajalu, Savita Verma Attri, Jogender Kumar, Sourabh Dutta</div>
+        <div class="pub-journal">Frontiers in Cellular and Infection Microbiology</div>
+      </div>
+      <a href="https://doi.org/10.3389/fcimb.2025.1649384" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Gut Microbiota Alteration in Healthy Preterm Infants: An Observational Study from Tertiary Care Center in India</div>
+        <div class="pub-authors">P Devarajalu, J Kumar, S Dutta, SV Attri, J Kabeerdoss</div>
+        <div class="pub-journal">Microorganisms</div>
+      </div>
+      <a href="https://doi.org/10.3390/microorganisms13030577" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Association of C4 Null Alleles and Persistently Low C4 in Asian Indian Patients With Systemic Lupus Erythematosus</div>
+        <div class="pub-authors">JK Sachin R. Jeevanagi, Pankti Mehta, Rekha Aaron, Debashish Danda, Sumita Danda</div>
+        <div class="pub-journal">International Journal of Immunogenetics</div>
+      </div>
+      <a href="https://doi.org/10.1111/iji.12704" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Clinical and molecular spectrum of genetic hypertriglyceridaemia in North Indian children: a case series</div>
+        <div class="pub-authors">DD Banerjee S, George A, Nanda PM, Bala A, Panigrahi I, Thunga C, Lal S, et al.</div>
+        <div class="pub-journal">Pediatric Endocrinology, Diabetes, and Metabolism</div>
+      </div>
+      <a href="https://doi.org/10.5114/pedm.2025.148401" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Epigenome-Wide DNA Methylation Profiling of Peripheral Blood Shows Lymphocyte Dysfunction in Children with Kawasaki Disease</div>
+        <div class="pub-authors">SS Kabeerdoss J, Pilania RK, Goyal T, Thangaraj A, Dhaliwal M</div>
+        <div class="pub-journal">Journal of Interferon &amp; Cytokine Research</div>
+      </div>
+      <a href="https://doi.org/10.1089/jir.2025.0029" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+
+
+
+
+  <div class="pub-list reveal">
+    <div class="pub-item">
+      <div class="pub-year">2024</div>
+      <div class="pub-content">
+        <div class="pub-title">A pilot study of childhood-onset Takayasu arteritis using whole exome sequencing suggests oligogenic inheritance involving classical complement, collagen, and autoinflammatory pathways
+</div>
+        <div class="pub-authors">Jayakanthan Kabeerdoss, Sumita Danda, Priyanka Srivastava, Reena Kerkhale, T. Sathish Kumar, Ruchika Goel & Debashish Danda 
+</div>
+        <div class="pub-journal">Clinical Rheumatology</div>
+      </div>
+      <a href="https://doi.org/10.1007/s10067-024-07017-z" class="pub-link" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+    </div>
+
+
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-text reveal">
+    <h2 class="section-title">About <span> Dr Jayakanthan</span></h2>
+    <p>
+Dr Jayakanthan is a full-time faculty member in the biochemistry unit of the Department of Pediatric Medicine at the Postgraduate Institute of Medical Education and Research (PGIMER), India. His responsibilities include teaching, diagnostic service and research. Current research interests include gut microbiome in healthy preterm infants and Necrotising Enterocolitis(NEC), immunopathogenesis and biomarker discovery of vasculitis including Kawasaki disease and Deficiency of adenosine deaminase 2 (DADA2). He has previously worked on research aspects of the pathogenesis of autoimmune disease, including Takayasu arteritis, Kawasaki Disease, Sjogren Syndrome, and Systemic lupus erythematosus (SLE); host-microbiome interactions; and biomarkers of latent Tuberculosis infection (LTBI).     </p>
+    <p>
+      Beyond his academic and research responsibilities, Dr Jayakanthan has demonstrated outstanding leadership as the chief guide for four MD postgraduate candidates in Paediatrics. His dedication to mentorship reflects his commitment to nurturing the next generation of medical professionals.
+    </p>
+  </div>
+  <div class="about-media">
+    <!-- PLACEHOLDER: the dashed box shows until you add images/lab-photo.jpg -->
+    <div class="photo-placeholder">
+      <span style="font-size:1.8rem;">🖼️</span>
+      <span>Lab photo</span>
+      <small>images/lab-photo.jpg</small>
+    </div>
+    <img src="sir.jpeg" alt="HIM (Host Immune Microbiome) Lab" onerror="this.style.display='none'" />
+  </div>
+</section>
+
+<!-- COLLABORATORS -->
+<section id="collaborators">
+  <div class="reveal">
+    <div class="section-tag">Working Together</div>
+    <h2 class="section-title">Our <span>Collaborators</span></h2>
+  </div>
+  <div class="collab-grid reveal">
+
+    <!-- To add a collaborator, copy one card below and edit the name and affiliation. -->
+    <div class="collab-card">
+      <div class="team-name">Dr. Rakesh Kumar Pilania</div>
+      <div class="team-role">Associate Professor, Allergy Immunology Unit, Advanced Pediatrics Centre, PGIMER, Chandigarh</div>
+<br>
+<div class="team-focus"><i>Areas of Research: Deficiency of Adenosine deaminase 2(DADA2) and Kawasaki disease </i></div>
+
+    </div>
+    <div class="collab-card">
+      <div class="team-name">Dr. Manpreet Dhaliwal</div>
+      <div class="team-role">Associate Professor, Allergy Immunology Unit, Advanced Pediatrics Centre, PGIMER, Chandigarh</div>
+<br>
+<div class="team-focus"><I>Areas of Research: Kawasaki disease</I></div>
+
+    </div>
+
+
+    <div class="collab-card">
+      <div class="team-name">Dr. Jogender
+Kumar</div>
+      <div class="team-role">Associate Professor, Neonatology Unit, Department of Pediatrics, PGIMER,Chandigarh</div>
+<br>
+<div class="team-focus"><i>Areas of Research: Neonatal Sepsis</i></div>
+    </div>
+    <div class="collab-card">
+      <div class="team-name">Professor Sourabh
+Dutta</div>
+      <div class="team-role">Professor, Neonatology Unit, Department of Pediatrics, PGIMER, Chandigarh</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Neonatal Sepsis</i></div>
+    </div>
+
+    <div class="collab-card">
+      <div class="team-name">Dr. Archana Angrup</div>
+      <div class="team-role">Additional
+Professor, Department of Medical Microbiology, PGIMER, Chandigarh</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Neonatal Sepsis</i></div>
+    </div>
+
+    <div class="collab-card">
+      <div class="team-name"> Dr. Praveen
+Kumar</div>
+      <div class="team-role">Professor and Head, Neonatology Unit, Department of Pediatrics, PGIMER,Chandigarh</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Neonatal Sepsis</i></div>
+    </div>
+
+
+    <div class="collab-card">
+      <div class="team-name">Professor Deepti Suri
+</div>
+      <div class="team-role">Professor, Allergy Immunology Unit, Advanced Pediatrics Centre, PGIMER, Chandigarh</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Kawasaki disease</i></div>
+    </div>
+
+
+
+    <div class="collab-card">
+      <div class="team-name">Dr. Avinash Sharma</div>
+      <div class="team-role">Associate Professor, Cell of Pediatric Clinical Immunology and Rheumatology, Department of Pediatrics, Dr Rajendra Prasad Government Medical college, Tanda, Kangra, Himachal Pradesh
+</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Kawasaki disease</i></div>
+    </div>
+
+
+    <div class="collab-card">
+      <div class="team-name">Dr. Mohankumar K. Murugesan</div>
+      <div class="team-role">Scientist F, Centre for Stem Cell Research, Christian Medical College (CMC), Vellore, Tamil Nadu
+</div>
+<BR>
+<div class="team-focus"><i>Areas of Research: Kawasaki disease</i></div>
+    </div>
+
+
+
+
+
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="reveal">
+    <div class="section-tag">The People</div>
+    <h2 class="section-title">Meet the <span>Team</span></h2>
+  </div>
+  <div class="team-grid reveal">
+
+    <!--
+      HOW TO EDIT A PERSON
+      1. Photo: save the file at the path in the <img> src (or change the src). Until it exists, the role text shows instead.
+      2. Popup text: edit the paragraphs inside <div class="team-bio">.
+      3. Popup links: add <div class="modal-links"><a href="URL" target="_blank" rel="noopener noreferrer">Google Scholar ↗</a></div> inside .team-bio.
+    -->
+
+    <div class="team-card">
+      <div class="team-avatar">PhD Student<img src="images/team/radhika.jpg" alt="Radhika" onerror="this.style.display='none'"></div>
+      <div class="team-name"> Radhika</div>
+      <div class="team-role">PhD Student</div>
+      <div class="team-focus">Kawasaki Disease · Mice Model · Lipidomics</div>
+<br>
+      <div class="team-focus"></div>
+      <div class="team-bio">
+        <p></p> <b>Current - Lipidomics based biomarkers for
+Prediction of Coronary Artery Lesions in Children with Kawasaki Disease</b>
+        <div class="modal-links">
+          <a href="#">Google Scholar ↗</a>
+          <a href="#">LinkedIn ↗</a>
+          <a href="#">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PRS - III<img src="maam.jpeg" alt="Dr. D. Prabavathi" onerror="this.style.display='none'"></div>
+      <div class="team-name">Dr. D. Prabavathi</div>
+      <div class="team-role"> Project Research Scientist - III </div>
+      <div class="team-focus">Human Genomics · Microbial Genomics</div>
+      <div class="team-focus"> </div>
+<br>
+      <div class="team-bio">
+        <p>
+Past Experience: ICMR First-in-World Challenge </p>
+<p>
+
+My research focuses on integrating human and microbial genomics to investigate the underlying mechanisms of complex gastrointestinal, autoimmune, and metabolic diseases, including necrotizing enterocolitis (NEC), inflammatory bowel disease (IBD), Kawasaki disease (KD), and alkaptonuria (AKU). </p>
+<b>Current - Temporal Multi‑Omics Study for Development of Trajectory Score for Neonatal Sepsis and
+AMR Prediction</b>
+        <div class="modal-links">
+          <a href="https://www.researchgate.net/profile/Prabavathi-Devarajalu?_tp=eyJjb250ZXh0Ijp7InBhZ2UiOiJwcm9maWxlIiwicHJldmlvdXNQYWdlIjpudWxsfX0">Research Gate ↗</a>
+        <a href="#">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">JRF<img src="anmol2.jpeg" alt="Anmol Gurgela" onerror="this.style.display='none'"></div>
+      <div class="team-name">Anmol Gurgela</div>
+      <div class="team-role">Junior Research Fellow</div>
+      <div class="team-focus">Molecular Biology · Immunology</div>
+<br>
+      <div class="team-bio">
+        <p>Currently working as a Junior Research Fellow (JRF) in the Department of Paediatric Biochemistry, PGIMER, Chandigarh, with over 5 years of post-M.Sc. research experience across Molecular Biology, Immunology and Translational Biomedical Research. Research expertise encompasses biomarker discovery and validation, molecular diagnostics, genomics, transcriptomics and cellular immunophenotyping. Proficient in a range of advanced molecular and cellular techniques, including flow cytometry, fluorescence-activated cell sorting (FACS), PCR and real-time qPCR, DNA/RNA isolation, Sanger sequencing and next-generation sequencing (NGS)-based approaches.</p>
+<b>Current - Multi-omics approach for
+development of biomarker signatures for predicting coronary artery lesions in atypical Kawasaki disease: A collaborative study from North and East India</b>
+        <div class="modal-links">
+          <a href="#">Google Scholar ↗</a>
+          <a href="#">LinkedIn ↗</a>
+          <a href="#">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PRS - III<img src="shivani.jpeg" alt="Dr. Shivani Thakur" onerror="this.style.display='none'"></div>
+      <div class="team-name">Dr. Shivani Thakur</div>
+      <div class="team-role">Project Research Scientist - III </div>
+      <div class="team-focus">Immunology · Vaccine Development · Parasitology</div>
+	<br>
+      <div class="team-bio">
+        <p>My research background is in immunology, with a focus on host-pathogen interactions and immune responses during infectious diseases. During my doctoral research at Panjab University, I investigated the immunomodulatory potential of novel TLR7/8 agonists as vaccine adjuvants against Leishmania donovani, exploring their effects on innate and adaptive immune responses. My work involved immunological profiling, macrophage functional assays, cytokine analysis, oxidative and nitrosative stress assessment, gene expression studies, and flow cytometry. I have a broader interest in understanding host immune responses to infection and the molecular mechanisms that influence disease progression.</p>
+<b>Current: ICMR First-in-World Challenge</b>
+        <div class="modal-links">
+          <a href="https://scholar.google.co.in/citations?user=PI7Oyh0AAAAJ&hl=en">Google Scholar ↗</a>
+          <a href="https://www.linkedin.com/in/shivanithakur06/">LinkedIn ↗</a>
+          <a href="mailto:shivanithakur199506@gmail.com">Copy for Email Address</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PRS - I<img src="greeshma1.jpg" alt="Dr. Greeshma Sharma" onerror="this.style.display='none'"></div>
+      <div class="team-name">Dr. Greeshma Sharma</div>
+      <div class="team-role">Project Research Scientist - I</div>
+      <div class="team-focus">Neonatal Allo-immune thrombocytopenia · Molecular Biology · Immuno-hematology</div>
+	<br>
+      <div class="team-bio">
+        <p>I am a Post doctoral Research Scientist, with 8 years of experience in the field of neonatal thrombocytopenia and neonatal alloimmune thrombocytopenia, along with hands-on molecular biology, and immunohematology experience.</p>
+<b>Current - Temporal Multi‑Omics Study for Development of Trajectory Score for Neonatal Sepsis and
+AMR Prediction</b>        <div class="modal-links">
+          <a href="https://share.google/qaLxQOa7rTuCJ5zi7">Google Scholar ↗</a>
+          <a href="https://share.google/kQDCA4uqxusiyk0Th">Research Gate ↗</a>
+          <a href="mailto:greeshmasharma91@gmail.com">Copy for Email Address</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PRS - I<img src="hargun.jpeg" alt="Hargunjeet Kaur" onerror="this.style.display='none'"></div>
+      <div class="team-name">Hargunjeet Kaur</div>
+      <div class="team-role">Project Research Scientist - I</div>
+      <div class="team-focus">Bioinformatics · Machine Learning · Deep Learning</div>
+	<br>
+      <div class="team-bio">
+        <p>My research areas include multi-omics and transcriptomics, machine learning for disease prediction and biomarker discovery, molecular docking and drug target identification, viral genomics and microRNAs, knowledge graphs and large language models for biomedical data. 
+</p>
+<b>Current - Temporal Multi‑Omics Study for Development of Trajectory Score for Neonatal Sepsis and
+AMR Prediction</b>
+        <div class="modal-links">
+          <a href="https://scholar.google.com/citations?user=2NQVdVkAAAAJ&hl=en">Google Scholar ↗</a>
+          <a href="https://www.linkedin.com/in/hargunjeetkaur04/">LinkedIn ↗</a>
+          <a href="mailto:hargunjeet2004@gmail.com">Copy for Email Address</a>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">PTS-I<img src="chakit.jpg" alt="Chakit" onerror="this.style.display='none'"></div>
+      <div class="team-name">Chakit</div>
+      <div class="team-role">Project Technical Staff - I</div>
+	<br>
+      <div class="team-focus"></div>
+      <div class="team-bio">
+        <P></P><b>Current - Transcriptome and epigenomic
+landscapes of CD4 T cells and B cells in children with Deficiency of adenosine deaminase 2 (DADA2)</b>
+        <div class="modal-links">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-layout">
+    <div class="contact-info reveal">
+      <div class="section-tag">Get in Touch</div>
+      <h2 class="section-title">Contact <span>&amp; Join</span></h2>
+      <p>
+        We welcome collaborations, clinical partnerships, and exceptional researchers at all career stages who share a passion for understanding immune-mediated disease.
+      </p>
+      <div class="contact-details">
+        <div class="contact-row">
+          <span class="contact-row-icon">📍</span>
+          <span>Department of Pediatric Medicine, Advanced Pediatric Center, Postgraduate Institute of Medical Education and Research (PGIMER), Chandigarh, India </span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">✉️</span>
+          <a href="mailto:k.jayakanthan@pgimer.edu.in">k.jayakanthan@pgimer.edu.in</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">🔗</span>
+	  <a href="https://www.researchgate.net/profile/Jayakanthan-Kabeerdoss-2" class="pub-link" target="_blank" rel="noopener noreferrer">Research Gate ↗</a>
+          <br>
+          <a href="https://scholar.google.com/citations?hl=en&user=ntJSNTAAAAAJ&view_op=list_works" class="pub-link" target="_blank" rel="noopener noreferrer">Google Scholar ↗</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-row-icon">💻</span>
+          <a href="#">GitHub — Lab Pipelines</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="join-box reveal">
+      <h3>Open Positions</h3>
+      <p>We are actively recruiting motivated individuals.</p>
+      <div class="positions">
+        <div class="position"><span class="pos-dot"></span> Intern </div>
+
+      </div>
+      <p style="font-size:0.82rem;">
+        Please send a CV, brief research statement, and contact details for two referees to the email above. Informal enquiries are very welcome.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HIM (Host Immune Microbiome) Lab</div>
+  <p>© 2026 · HIM (Host Immune Microbiome) Lab · PGIMER</p>
+</footer>
+
+<!-- TEAM POPUP -->
+<div class="modal-overlay" id="team-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div class="modal-head">
+      <div id="modal-avatar"></div>
+      <div>
+        <h3 id="modal-name"></h3>
+        <div id="modal-role"></div>
+      </div>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- RESEARCH POPUP -->
+<div class="modal-overlay" id="research-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rmodal-title">
+    <button class="modal-close" id="rmodal-close" aria-label="Close">×</button>
+    <div class="rmodal-head">
+      <div class="rmodal-icon" id="rmodal-icon"></div>
+      <h3 id="rmodal-title"></h3>
+    </div>
+    <div id="rmodal-body"></div>
+  </div>
+</div>
+
+<script>
+  // Intersection Observer for scroll reveals
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger child reveals in the team grid
+  document.querySelectorAll('.team-grid').forEach(grid => {
+    grid.querySelectorAll('.team-card').forEach((card, i) => {
+      card.style.transitionDelay = `${i * 60}ms`;
+    });
+  });
+
+  // Team popups
+  const modal = document.getElementById('team-modal');
+  const mName = document.getElementById('modal-name');
+  const mRole = document.getElementById('modal-role');
+  const mAvatar = document.getElementById('modal-avatar');
+  const mBody = document.getElementById('modal-body');
+  const mClose = document.getElementById('modal-close');
+  let lastFocus = null;
+
+  function openModal(card) {
+    lastFocus = card;
+    mName.textContent = card.querySelector('.team-name').textContent.trim();
+    mRole.textContent = card.querySelector('.team-role').textContent.trim();
+    mAvatar.innerHTML = card.querySelector('.team-avatar').outerHTML;
+    const bio = card.querySelector('.team-bio');
+    mBody.innerHTML = bio ? bio.innerHTML : '<p>Profile coming soon.</p>';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    mClose.focus();
+  }
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  document.querySelectorAll('.team-card').forEach(card => {
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.addEventListener('click', () => openModal(card));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); }
+    });
+  });
+  mBody.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if (a && a.getAttribute('href') === '#') e.preventDefault();
+  });
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  mClose.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // Research popups
+const rModal = document.getElementById('research-modal');
+const rIcon  = document.getElementById('rmodal-icon');
+const rTitle = document.getElementById('rmodal-title');
+const rBody  = document.getElementById('rmodal-body');
+const rClose = document.getElementById('rmodal-close');
+let rLast = null;
+
+function openResearch(pane) {
+  rLast = pane;
+  rIcon.textContent  = pane.querySelector('.rc-icon').textContent;
+  rTitle.textContent = pane.querySelector('.rc-title').textContent.trim();
+  rBody.innerHTML    = pane.querySelector('.rc-full').innerHTML;
+  rModal.classList.add('open');
+  rModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  rClose.focus();
+}
+function closeResearch() {
+  rModal.classList.remove('open');
+  rModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (rLast) rLast.focus();
+}
+
+document.querySelectorAll('.research-pane').forEach(pane => {
+  pane.addEventListener('click', () => openResearch(pane));
+  pane.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openResearch(pane); }
+  });
+});
+rModal.addEventListener('click', e => { if (e.target === rModal) closeResearch(); });
+rClose.addEventListener('click', closeResearch);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && rModal.classList.contains('open')) closeResearch();
+});
+</script>
+</body>
+</html>
